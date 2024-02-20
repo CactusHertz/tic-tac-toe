@@ -2,18 +2,28 @@ function gameboard () {
     let board = [[1,2,3],[4,5,6],[7,8,9]];
     let movesMade = 0;
     let piece = 'X';
+    let winner = null;
+    let gameFinished = false;
 
     const getBoard = () => {
         return board;
     };
 
     const setPiece = (x, y, square) => {
-        if (validMove(x,y)){
+        if (validMove(x,y) && gameFinished == false){
             board[x][y] = piece;
             square.textContent = piece;
             console.log(`valid move: ${piece} placed at ${x},${y}`);
+            
             movesMade++;
             togglePiece();
+
+            winner = checkWin();
+            if (winner != null){
+                console.log(winner);
+                gameFinished = true;
+            }
+            displayState();
             return true;
         }
         else {
@@ -23,11 +33,33 @@ function gameboard () {
     };
 
     const validMove = (x, y) => {
-        if (board[x][y] != 'X' && board[x][y] != '0'){     
+        if (board[x][y] != 'X' && board[x][y] != 'O' && gameFinished != true){     
             return true;
         }
         return false;
     };
+
+    const displayState = () => {
+        const state = document.querySelector('.state');
+        if (gameFinished == true){
+            if (winner == 'X'){
+                state.textContent = 'Player 1 won the game';
+            }
+            else if (winner == 'O'){
+                state.textContent = 'Player 2 won the game';
+            }
+            else{
+                state.textContent = 'Tie';
+            }
+        }
+        else if (piece == 'X') {
+            state.textContent = "Player 1's turn";
+        }
+        else if (piece == 'O'){
+            state.textContent = "Player 2's turn";
+        }
+
+    }
 
     const checkWin = () => {
         // checks if the board is in a completed states
@@ -48,7 +80,7 @@ function gameboard () {
         }
         //check diagonals
         let piece = board[0][0]
-        if(tttboard[1][1] == piece && board[2][2] == piece){
+        if(board[1][1] == piece && board[2][2] == piece){
             return piece;
         }
         piece = board[0][2]
@@ -59,7 +91,7 @@ function gameboard () {
         if(movesMade >= 9){
             return 'tie';
         }
-        return 'no'
+        return null;
     }
 
     const togglePiece = () => {
